@@ -6,6 +6,7 @@ module.exports = {
     database: "login"
   },
   server: {
+    vhost: false,
     port: 3000,
     url: "login.example.local",
     session_secret: "fezfezgzekrgeger"

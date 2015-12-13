@@ -10,14 +10,24 @@ var err = require('debug')('auth:error');
 
 database.initializeDatabaseConnection();
 
-info('Initializing vhost ...');
-var exp = express();
 var app = require('../app/app.js');
-exp.use(vhost(config.server.url, app));
-info('Done');
+
+if (config.server.vhost) {
+  info('Initializing vhost ...');
+  var exp = express();
+  exp.use(vhost(config.server.url, app));
+  info('Done');
+}
 
 info('Initializing Http server ...');
-var httpServer = http.createServer(exp);
+
+var httpServer;
+if (config.server.vhost) {
+  httpServer = http.createServer(exp);
+}
+else {
+  httpServer = http.createServer(app);
+}
 httpServer.on('error', onError);
 httpServer.on('listening', onStated);
 httpServer.listen(config.server.port);
