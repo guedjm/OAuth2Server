@@ -1,0 +1,22 @@
+{
+  "name": "oauth2server",
+  "version": "1.0.0",
+  "description": "A node js implementation of the OAuth2 server flow",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guedjm/OAuth2Server.git"
+  },
+  "author": "guedj_m",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/guedjm/OAuth2Server/issues"
+  },
+  "homepage": "https://github.com/guedjm/OAuth2Server#readme",
+  "scripts": {},
+  "dependencies": {
+    "debug": "^2.2.0",
+    "express": "^4.13.3",
+    "mongoose": "^4.3.1",
+    "vhost": "^3.0.2"
+  }
+}
