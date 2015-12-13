@@ -1,0 +1,35 @@
+doctype html
+html
+   head
+      title Login
+      link(href='/css/bootstrap.min.css' rel='stylesheet')
+      link(href='/css/freelancer.css' rel='stylesheet')
+      link(href='/font-awesome/css/font-awesome.min.css' rel='stylesheet')
+      script(src='/js/jquery-2.1.4.min.js' type='text/javascript')
+      script(src='/js/bootstrap.min.js' type='text/javascript')
+      script(src='/js/freelancer.js' type='text/javascript')
+   body
+      //nav(class='navbar navbar-default navbar-fixed-top')
+          div(class='container')
+              a(class='navbar-brand') Example
+      div(class='container' style='margin-top: 110px')
+         div(class='row')
+            div(class='col-xs-4 col-xs-offset-4')
+               span #{fname} #{lname},
+               br
+               br
+               span(style='font-weight: bold') #{api}
+               span would like to access some of your profile information
+               br
+               br
+               br
+               div(class='row')
+                  form(action='' method='post' name='authorize')
+                     div(class='col-xs-6')
+                        button(type='submit' class='btn btn-md btn-success') Allow access
+
+                     div(class='col-xs-6')
+                        button(type='submit' class='btn btn-md') Cancel
+
+
+

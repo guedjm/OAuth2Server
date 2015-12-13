@@ -1,0 +1,43 @@
+doctype html
+html
+    head
+        title Login
+        link(href='/css/bootstrap.min.css' rel='stylesheet')
+        link(href='/css/freelancer.css' rel='stylesheet')
+        link(href='/font-awesome/css/font-awesome.min.css' rel='stylesheet')
+
+        script(src='/js/jquery-2.1.4.min.js' type='text/javascript')
+        script(src='/js/bootstrap.min.js' type='text/javascript')
+        script(src='/js/freelancer.js' type='text/javascript')
+
+    body
+        //nav(class='navbar navbar-default navbar-fixed-top')
+            div(class='container')
+                a(class='navbar-brand') Example
+
+        div(class='container' style='margin-top: 110px')
+            div(class='row')
+                div(class='col-xs-4 col-xs-offset-4 text-center')
+                    h2 Welcome
+                    hr(class='star-primary')
+
+                    form(action='' method='post')
+                        div(class='col-xs-12' style='margin-top: 15px')
+
+                            div(class='row control-group')
+                                div(class='form-group col-xs-12 floating-label-form-group controls')
+                                    label Email
+                                    input(type='email' class='form-control' placeholder='Email' required data-validation-required-message='Please enter your email address')
+                                    p(class='help-block text-danger')
+
+                            div(class='row control-group')
+                                div(class='form-group col-xs-12 floating-label-form-group controls')
+                                    label Password
+                                    input(type='password' class='form-control' placeholder='Password' required data-validation-required-message='Please enter your password' aria-invalid='false')
+                                    p(class='help-block text-danger')
+
+                            br
+                            div(class='row')
+                                div(class='form-group col-xs-12')
+                                    button(type='submit' class='btn btn-success' style="width: 100%") LOGIN
+
