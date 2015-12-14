@@ -1,5 +1,7 @@
 var authorizeRequestModel = require('../model/auth/authorizationRequest');
 var clientModel = require('../model/client');
+var userModel = require('../model/user');
+
 
 /**
  * This middleware is called on every request on the authorizeRoute
@@ -11,7 +13,7 @@ function handleAuthorizationRequest(req, res, next) {
 
 
   req.authRedirectAllowed = false;
-  req.authUserId = (req.session == undefined) ? null : req.session.userId;
+  req.authUserId = (req.session == undefined) ? null : req.session.authUserId;
 
   //If its a GET, log the request
   if (req.method == 'GET') {
@@ -42,7 +44,22 @@ function getClientInformation(req, res, next) {
       else {
         req.authClient = client;
         req.authRedirectAllowed = client.redirectUris.indexOf(req.query.redirect_uri) != -1;
-        next();
+
+        //Get user
+        if (req.authUserId != null) {
+          userModel.getUserById(req.authUserId, function (err, user) {
+            if (err || user == null ) {
+              next(err);
+            }
+            else {
+              req.authUser = user;
+              next();
+            }
+          });
+        }
+        else {
+          next();
+        }
       }
     });
   }

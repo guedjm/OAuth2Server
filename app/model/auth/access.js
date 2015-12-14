@@ -12,6 +12,14 @@ var  accessSchema = new mongoose.Schema({
   revoked: Boolean
 });
 
+accessSchema.statics.getExistingAccess = function (userId, clientId, scope, cb) {
+  accessModel.findOne({
+    clientId: clientId,
+    userId: userId,
+    scope: scope
+  }, cb);
+};
+
 accessSchema.statics.createNewAccessFromCodeGrant = function (requestId, code, cb) {
 
   //Set Code as used

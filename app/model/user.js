@@ -28,6 +28,10 @@ userSchema.statics.getUser = function (email, password, cb) {
   userModel.findOne({email: email, password: cryptedPassword}, '', cb);
 };
 
+userSchema.statics.getUserById = function (userId, cb) {
+  userModel.findOne({_id: userId}, cb);
+};
+
 
 var userModel = mongoose.model('User', userSchema);
 

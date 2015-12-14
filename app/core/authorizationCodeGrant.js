@@ -16,7 +16,24 @@ function authorizationCodeGrant(req, res, next) {
     res.redirect('/v1/oauth2/login?' + querystring.stringify(req.query));
   }
   else {
-    //TODO
+
+    //Get existing access
+    accessModel.getExistingAccess(req.authUserId, req.authClient._id, req.authRequest.scope, function (err, access) {
+      if (err) {
+        next(err);
+      }
+      else {
+
+        //If access already exists
+        if (access != undefined) {
+          //TODO Revoke access + tokens
+        }
+
+        //Display authorize form
+        res.render('authorize', {fname: req.authUser.firstName, lname: req.authUser.lastName, api: req.authClient.applicationName});
+      }
+
+    });
   }
 }
 
