@@ -25,11 +25,15 @@ html
                br
                div(class='row' style='font-size: large')
                   form(action='' method='post' name='authorize')
-                     div(class='col-xs-6')
-                        button(type='submit' class='btn btn-md btn-success') Allow access
 
-                     div(class='col-xs-6')
-                        button(type='submit' class='btn btn-md') Cancel
+                      input(type='hidden' name='reqId' value='#{reqId}')
+
+                      div(class='col-xs-6')
+                        button(type='submit' name='allow' class='btn btn-md btn-success') Allow access
+
+                      div(class='col-xs-6')
+                        button(type='submit' name='denie' class='btn btn-md') Cancel
+
 
 
 

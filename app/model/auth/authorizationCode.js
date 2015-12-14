@@ -6,7 +6,6 @@ var authorizationCodeSchemas = new mongoose.Schema({
   requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthorizationRequest'},
   clientId: {type: mongoose.Schema.Types.ObjectId, ref: 'Client'},
   userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-  accessId: {type: mongoose.Schema.Types.ObjectId, ref: 'Access'},
   code: String,
   scope: String,
   deliveryDate: Date,
@@ -15,7 +14,7 @@ var authorizationCodeSchemas = new mongoose.Schema({
   useDate: Date
 });
 
-authorizationCodeSchemas.statics.createCodeFromRequest = function (authorizationRequest, userId, clientId, access, cb) {
+authorizationCodeSchemas.statics.createCodeFromRequest = function (authorizationRequest, userId, clientId, cb) {
   var now = new Date();
   var expirationDate = new Date();
   expirationDate.setMinutes(now.getMinutes() + config.auth.accessCodeDuration);
@@ -30,10 +29,6 @@ authorizationCodeSchemas.statics.createCodeFromRequest = function (authorization
     expirationDate: expirationDate,
     used: false,
     useDate: null };
-
-  if (access != null) {
-    code.accessId = access._id;
-  }
   authorizationCodeModel.create(code, cb);
 };
 

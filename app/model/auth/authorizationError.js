@@ -6,10 +6,16 @@ var authorizationErrorSchema = new mongoose.Schema({
 });
 
 authorizationErrorSchema.statics.createFromRequest = function (authorizationRequest, error, cb) {
-  authorizationErrorModel.create({
-    requestId: authorizationRequest._id,
+
+  var err = {
     error: error
-  }, cb);
+  };
+
+  if (authorizationRequest != undefined) {
+    err.requestId = authorizationRequest._id;
+  }
+
+  authorizationErrorModel.create(err, cb);
 };
 
 var authorizationErrorModel = mongoose.model('AuthorizationError', authorizationErrorSchema);

@@ -25,6 +25,12 @@ authorizationRequestSchema.statics.createAuthorizationRequest = function (respon
   }, cb);
 };
 
+authorizationRequestSchema.statics.getRequest = function (requestId, cb) {
+  authorizationRequestModel.findOne({
+    _id: requestId
+  }, cb);
+};
+
 var authorizationRequestModel = mongoose.model('AuthorizationRequest', authorizationRequestSchema);
 
 module.exports = authorizationRequestModel;

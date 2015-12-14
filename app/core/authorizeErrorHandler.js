@@ -9,7 +9,6 @@ var authorizeErrorModel = require('../model/auth/authorizationError');
  * @param next
  */
 function handleAuthorizationError(req, res, error, next) {
-  console.log(error);
   authorizeErrorModel.createFromRequest(req.authRequest, error, function(err, row) {
   });
 

@@ -29,9 +29,33 @@ router.get('', function(req, res, next) {
     }
 
   }
+});
 
+router.post('', function (req, res, next) {
+  var supportedMethod = ['code'];
 
-  //res.render('authorize', {fname: 'Maxime', lname: 'Guedj', api: 'Facebook'});
+  //If arguments are missing -> error
+  if (req.authRedirectAllowed == false || req.query.response_type == undefined) {
+    authorizeErrorHandler.handleAuthorizationError(req, res, 'invalid_request', next);
+  }
+  else {
+    //If method is not supported -> error
+    if (supportedMethod.indexOf(req.query.response_type) == -1) {
+      authorizeErrorHandler.handleAuthorizationError(req, res, 'unsupported_response_type', next);
+    }
+    else {
+      //Handle each response_type
+      switch (req.query.response_type) {
+        case 'code':
+          authorizationCodeGrant.authorizationCodeGrantResult(req, res, next);
+          break;
+
+        default:
+          authorizeErrorHandler.handleAuthorizationError(req, res, 'unsupported_response_type', next);
+      }
+    }
+
+  }
 });
 
 module.exports = router;
