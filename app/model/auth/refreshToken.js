@@ -26,6 +26,10 @@ refreshTokenSchema.statics.createNewRefreshToken = function (requestId, accessId
   }, cb);
 };
 
+refreshTokenSchema.statics.getTokenById = function (tokenId, cb) {
+  refreshTokenModel.findOne({_id: tokenId}, cb);
+};
+
 refreshTokenSchema.methods.condemn = function (cb) {
   this.usable = false;
   this.save(function (err) {

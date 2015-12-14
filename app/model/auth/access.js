@@ -77,6 +77,45 @@ accessSchema.statics.createNewAccessFromCodeGrant = function (requestId, code, c
   });
 };
 
+accessSchema.methods.revokeAccess = function (cb) {
+  var access = this;
+
+  if (access.currentAccessTokenId != null) {
+    //Condemn access token
+    accessModel.getTokenById(access.currentAccessTokenId, function (err, accessToken) {
+      if (err || accessToken == undefined) {
+        cb(err);
+      }
+      else {
+        accessToken.condemn(function (err) {
+          if (err) {
+            cb(err);
+          }
+          else {
+            if (access.currentRefreshTokenId != null) {
+
+              //Condemn refresh token
+              refreshTokenModel.getTokenById(access.currentRefreshTokenId, function (err, refreshToken) {
+                if (err || accessToken == undefined) {
+                  cb(err);
+                }
+                else {
+                  refreshToken.condemn(function (err) {
+                    cb(err);
+                  });
+                }
+              });
+            }
+            else {
+              cb(null);
+            }
+          }
+        });
+      }
+    });
+  }
+};
+
 accessSchema.methods.renewTokens = function (requestId, cb) {
   var access = this;
   accessTokenModel.findOne({_id: this.currentAccessTokenId}, function (err, oldAccessToken) {

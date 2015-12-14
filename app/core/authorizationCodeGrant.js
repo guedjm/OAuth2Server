@@ -26,11 +26,20 @@ function authorizationCodeGrant(req, res, next) {
 
         //If access already exists
         if (access != undefined) {
-          //TODO Revoke access + tokens
+          access.revokeAccess(function (err) {
+            if (err) {
+              next(err);
+            }
+            else {
+              //Display authorize form
+              res.render('authorize', {fname: req.authUser.firstName, lname: req.authUser.lastName, api: req.authClient.applicationName, reqId: req.authRequest._id});
+            }
+          });
         }
-
-        //Display authorize form
-        res.render('authorize', {fname: req.authUser.firstName, lname: req.authUser.lastName, api: req.authClient.applicationName, reqId: req.authRequest._id});
+        else {
+          //Display authorize form
+          res.render('authorize', {fname: req.authUser.firstName, lname: req.authUser.lastName, api: req.authClient.applicationName, reqId: req.authRequest._id});
+        }
       }
 
     });
