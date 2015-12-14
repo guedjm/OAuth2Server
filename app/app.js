@@ -20,11 +20,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+//Middleware
+var authorizeMiddleware = require('./middleware/authorizeMiddleware');
+
 //Routes
 var login = require('./route/login');
 var authorize = require('./route/authorize');
 
 app.use('/v1/oauth2/login', login);
+
+app.use('/v1/oauth2/authorize', authorizeMiddleware);
 app.use('/v1/oauth2/authorize', authorize);
 
 // 404 error
@@ -36,6 +41,7 @@ app.use(function(req, res, next) {
 
 //Error handler
 app.use(function(err, req, res, next) {
+  console.error(err.stack);
   res.status(err.status || 500);
   res.send();
 });

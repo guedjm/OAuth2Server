@@ -29,6 +29,10 @@ clientSchema.statics.createNewClient = function(developerId, clientType, applica
   }, func);
 };
 
+clientSchema.statics.getActivatedClient = function (clientId, func) {
+  clientModel.findOne({clientId: clientId, activated: true}, func);
+};
+
 var clientModel = mongoose.model('Client', clientSchema);
 
 module.exports = clientModel;
