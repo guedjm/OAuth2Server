@@ -2,7 +2,7 @@ var config = require('../config');
 var express = require('express');
 
 var info = require('debug')('auth:info');
-var err = require('debug')('auth:error');
+var logErr = require('debug')('auth:error');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
@@ -41,7 +41,7 @@ app.use(function(req, res, next) {
 
 //Error handler
 app.use(function(err, req, res, next) {
-  console.error(err.stack);
+  logErr(err.stack);
   res.status(err.status || 500);
   res.send();
 });

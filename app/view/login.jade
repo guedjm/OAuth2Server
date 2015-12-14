@@ -21,6 +21,10 @@ html
                     h2 Welcome
                     hr(class='star-primary')
 
+                    if (failed == true)
+                        span(style='color: red;') Invalid username / password
+                    else
+                        span(style='color: white;') Invalid username / password
                     form(action='' method='post')
                         div(class='col-xs-12' style='margin-top: 15px')
 

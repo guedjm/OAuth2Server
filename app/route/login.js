@@ -3,8 +3,6 @@ var router = express.Router();
 var userModel = require('../model/user');
 var querystring = require('querystring');
 
-//TODO display error on form
-
 router.get('', function(req, res, next) {
 
   var session = req.session;
@@ -14,7 +12,7 @@ router.get('', function(req, res, next) {
     res.redirect('/v1/oauth2/authorize?' + querystring.stringify(req.query));
   }
   else {
-    res.render('login', {});
+    res.render('login', {failed: false});
   }
 });
 
@@ -42,7 +40,7 @@ router.post('', function (req, res, next) {
         res.redirect('/v1/oauth2/authorize?' + querystring.stringify(req.query));
       }
       else {
-        res.render('login');
+        res.render('login', {failed: true});
       }
     });
   }
