@@ -9,7 +9,8 @@ var  accessSchema = new mongoose.Schema({
   currentAccessTokenId: {type: mongoose.Schema.Types.ObjectId, ref: 'AccessToken'},
   currentRefreshTokenId: {type: mongoose.Schema.Types.ObjectId, ref: 'RefreshToken'},
   deliveryDate: Date,
-  revoked: Boolean
+  revoked: Boolean,
+  revokeDate: Date
 });
 
 accessSchema.statics.getExistingAccess = function (userId, clientId, scope, cb) {
@@ -101,7 +102,18 @@ accessSchema.methods.revokeAccess = function (cb) {
                 }
                 else {
                   refreshToken.condemn(function (err) {
-                    cb(err);
+
+                    if (err) {
+                      cb(err);
+                    }
+                    else {
+                      //Revoke access
+                      access.revoked = true;
+                      access.revokeDate = new Date();
+                      access.save(function (err) {
+                        cb(err);
+                      });
+                    }
                   });
                 }
               });
