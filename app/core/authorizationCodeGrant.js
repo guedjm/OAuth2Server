@@ -3,6 +3,8 @@ var authorizationCodeModel = require('../model/auth/authorizationCode');
 var authorizeRequestModel = require('../model/auth/authorizationRequest.js');
 var authorizeErrorHandler = require('./authorizeErrorHandler');
 var querystring = require('querystring');
+var log = require('debug')('app:core:authorizationCodeGrant');
+var logErr = require('debug')('app:core:authorizationCodeGrant:error');
 
 
 function authorizationCodeGrant(req, res, next) {
@@ -13,6 +15,7 @@ function authorizationCodeGrant(req, res, next) {
   }
   else if (req.authUserId == null) {
     //If user not logged, redirect to login form
+    log('Redirecting user to login page');
     res.redirect('/v1/oauth2/login?' + querystring.stringify(req.query));
   }
   else {
@@ -20,24 +23,30 @@ function authorizationCodeGrant(req, res, next) {
     //Get existing access
     accessModel.getExistingAccess(req.authUserId, req.authClient._id, req.authRequest.scope, function (err, access) {
       if (err) {
+        logErr('Error retrieving existing access');
         next(err);
       }
       else {
 
         //If access already exists
         if (access != undefined) {
+
+          log('Access already exists, revoking ...');
           access.revokeAccess(function (err) {
             if (err) {
+              logErr('Unable to revoke access');
               next(err);
             }
             else {
               //Display authorize form
+              log('Displaying authorization form');
               res.render('authorize', {fname: req.authUser.firstName, lname: req.authUser.lastName, api: req.authClient.applicationName, reqId: req.authRequest._id});
             }
           });
         }
         else {
           //Display authorize form
+          log('Displaying authorization form');
           res.render('authorize', {fname: req.authUser.firstName, lname: req.authUser.lastName, api: req.authClient.applicationName, reqId: req.authRequest._id});
         }
       }
@@ -52,16 +61,16 @@ function authorizationCodeGrantResult(req, res, next) {
   }
   else if (req.authUserId == null) {
     //If user not logged, redirect to login form
+    log('Redirecting user to login page');
     res.redirect('/v1/oauth2/login?' + querystring.stringify(req.query));
   }
   else {
 
-    console.log(req.body);
     //Check POST body
     if (req.body.reqId == undefined ||
       (req.body.allow == undefined && req.body.refuse == undefined)) {
+      log('Invalid post data');
       authorizeErrorHandler.handleAuthorizationError(req, res, 'invalid_request', next);
-
     }
     else {
       //Check request
@@ -79,13 +88,17 @@ function authorizationCodeGrantResult(req, res, next) {
         else {
 
           if (req.body.allow != undefined) {
+
             //Generate code
+            log('Generating code ...');
             authorizationCodeModel.createCodeFromRequest(request, req.authUserId, req.authClient._id, function (err, authorizationCode) {
               if (err || authorizationCode == undefined) {
+                logErr('Unable to generate code');
                 authorizeErrorHandler.handleAuthorizationError(req, res, 'server_error', next);
               }
               else {
                 //Redirect back to the client application with code
+                log('Code is ' + authorizationCode.code);
                 var redirectQuery = {
                   code: authorizationCode.code
                 };
@@ -94,11 +107,13 @@ function authorizationCodeGrantResult(req, res, next) {
                   redirectQuery.state = request.state;
                 }
 
+                log('Redirecting user to client app (' + request.redirectUri + ')');
                 res.redirect(request.redirectUri + '?' + querystring.stringify(redirectQuery));
               }
             });
           }
           else {
+            log('User denied access');
             authorizeErrorHandler.handleAuthorizationError(req, res, 'access_denied', next);
           }
         }

@@ -1,5 +1,7 @@
 var mongoose = require('mongoose');
 var sha1 = require('sha1');
+var log = require('debug')('app:model:auth:refreshToken');
+
 
 var refreshTokenSchema = new mongoose.Schema({
   requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AccessTokenRequest'},
@@ -31,6 +33,7 @@ refreshTokenSchema.statics.getTokenById = function (tokenId, cb) {
 };
 
 refreshTokenSchema.methods.condemn = function (cb) {
+  log('Condemning refreshToken ...');
   this.usable = false;
   this.save(function (err) {
     cb(err);

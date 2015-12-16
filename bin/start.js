@@ -5,21 +5,21 @@ var vhost = require('vhost');
 var express = require('express');
 var http = require('http');
 
-var info = require('debug')('auth:info');
-var err = require('debug')('auth:error');
+var log = require('debug')('app:start');
+var err = require('debug')('app:start:error');
 
 database.initializeDatabaseConnection();
 
 var app = require('../app/app.js');
 
 if (config.server.vhost) {
-  info('Initializing vhost ...');
+  log('Initializing vhost ...');
   var exp = express();
   exp.use(vhost(config.server.url, app));
-  info('Done');
+  log('Done');
 }
 
-info('Initializing Http server ...');
+log('Initializing Http server ...');
 
 var httpServer;
 if (config.server.vhost) {
@@ -34,7 +34,7 @@ httpServer.listen(config.server.port);
 
 
 function onStated() {
-  info('Server started on port ' + config.server.port);
+  log('Server started on port ' + config.server.port);
 }
 
 function onError(error) {

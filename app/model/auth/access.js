@@ -1,4 +1,6 @@
 var mongoose = require('mongoose');
+var log = require('debug')('app:model:auth:access');
+var logErr = require('debug')('app:model:auth:access:error');
 var accessTokenModel = require('./accessToken');
 var refreshTokenModel = require('./refreshToken');
 
@@ -85,11 +87,13 @@ accessSchema.methods.revokeAccess = function (cb) {
     //Condemn access token
     accessModel.getTokenById(access.currentAccessTokenId, function (err, accessToken) {
       if (err || accessToken == undefined) {
+        logErr('Unable to retrieve accessToken');
         cb(err);
       }
       else {
         accessToken.condemn(function (err) {
           if (err) {
+            logErr('Unable to update accessToken');
             cb(err);
           }
           else {
@@ -98,16 +102,19 @@ accessSchema.methods.revokeAccess = function (cb) {
               //Condemn refresh token
               refreshTokenModel.getTokenById(access.currentRefreshTokenId, function (err, refreshToken) {
                 if (err || accessToken == undefined) {
+                  logErr('Unable to retrieve refreshToken');
                   cb(err);
                 }
                 else {
                   refreshToken.condemn(function (err) {
 
                     if (err) {
+                      logErr('Unable to update accessToken');
                       cb(err);
                     }
                     else {
                       //Revoke access
+                      log('Revoking access ...');
                       access.revoked = true;
                       access.revokeDate = new Date();
                       access.save(function (err) {

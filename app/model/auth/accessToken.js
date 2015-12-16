@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var sha1 = require('sha1');
+var log = require('debug')('app:model:auth:accessToken');
 
 var accessTokenSchema = new mongoose.Schema({
   requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AccessTokenRequest'},
@@ -33,6 +34,7 @@ accessTokenSchema.statics.getTokenById = function (tokenId, cb) {
 
 
 accessTokenSchema.methods.condemn = function (cb) {
+  log('Condemning accessToken ...');
   this.usable = false;
   this.save(function (err) {
     cb(err);

@@ -41,6 +41,7 @@ app.use(function(req, res, next) {
 
 //Error handler
 app.use(function(err, req, res, next) {
+  logErr(req.baseUrl);
   logErr(err.stack);
   res.status(err.status || 500);
   res.send();

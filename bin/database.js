@@ -1,14 +1,14 @@
 var config = require('../config');
 var mongoose = require('mongoose');
-var info = require('debug')('auth:info');
-var err = require('debug')('auth:error');
+var log = require('debug')('app:database');
+var err = require('debug')('app:database:error');
 
 var initializeDatabaseConnection = function () {
 
-  info('Initializing database connection ...');
+  log('Initializing database connection ...');
 
   mongoose.connection.on('open', function() {
-    info('Database connection initialized');
+    log('Database connection initialized');
   });
 
   mongoose.connection.on('error', function () {
