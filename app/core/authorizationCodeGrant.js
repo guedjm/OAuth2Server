@@ -68,7 +68,7 @@ function authorizationCodeGrantResult(req, res, next) {
 
     //Check POST body
     if (req.body.reqId == undefined ||
-      (req.body.allow == undefined && req.body.refuse == undefined)) {
+      (req.body.allow == undefined && req.body.denie == undefined)) {
       log('Invalid post data');
       authorizeErrorHandler.handleAuthorizationError(req, res, 'invalid_request', next);
     }
