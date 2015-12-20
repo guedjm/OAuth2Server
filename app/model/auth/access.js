@@ -3,10 +3,12 @@ var log = require('debug')('app:model:auth:access');
 var logErr = require('debug')('app:model:auth:access:error');
 var accessTokenModel = require('./accessToken');
 var refreshTokenModel = require('./refreshToken');
+var authorizationCodeModel = require('./authorizationCode');
 
 var  accessSchema = new mongoose.Schema({
   clientId: {type: mongoose.Schema.Types.ObjectId, ref: 'Client'},
-  userId: mongoose.Schema.Types.ObjectId,
+  userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  grantType: String,
   scope: String,
   currentAccessTokenId: {type: mongoose.Schema.Types.ObjectId, ref: 'AccessToken'},
   currentRefreshTokenId: {type: mongoose.Schema.Types.ObjectId, ref: 'RefreshToken'},
@@ -21,6 +23,45 @@ accessSchema.statics.getExistingAccess = function (userId, clientId, scope, cb) 
     userId: userId,
     scope: scope
   }, cb);
+};
+
+accessSchema.statics.createNewAccessCodeGrant = function (authRequest, clientId, userId, cb) {
+
+   var accessObj = {
+     clientId: clientId,
+     userId: userId,
+     scope: authRequest.scope,
+     grantType: 'code',
+     currentAccessTokenId: null,
+     currentRefreshTokenId: null,
+     deliveryDate: new Date(),
+     revoked: false,
+     revokeDate: null
+   };
+
+  accessModel.create(accessObj, function(err, access) {
+    if (err) {
+      logErr('Unable to create access');
+      cb(err, null, null);
+    }
+    else {
+
+      log('Access created for client : ' + clientId + ' user : ' + userId + ' scope : ' + authRequest.scope);
+
+      //Create code
+      authorizationCodeModel.createCodeFromAccess(authRequest, access, function (err, code) {
+        if (err) {
+          logErr('Unable to create code');
+          cb(err, null, null);
+        }
+        else {
+
+          log('Code created : ' + code.code);
+          cb(null, access, code);
+        }
+      });
+    }
+  });
 };
 
 accessSchema.statics.createNewAccessFromCodeGrant = function (requestId, code, cb) {
@@ -85,7 +126,7 @@ accessSchema.methods.revokeAccess = function (cb) {
 
   if (access.currentAccessTokenId != null) {
     //Condemn access token
-    accessModel.getTokenById(access.currentAccessTokenId, function (err, accessToken) {
+    accessTokenModel.getTokenById(access.currentAccessTokenId, function (err, accessToken) {
       if (err || accessToken == undefined) {
         logErr('Unable to retrieve accessToken');
         cb(err);
@@ -191,6 +232,46 @@ accessSchema.methods.renewTokens = function (requestId, cb) {
           });
         }
       })
+    }
+  });
+};
+
+accessSchema.methods.generateTokens = function (request, cb) {
+
+  var access = this;
+  log('Generating tokens ...');
+
+  accessTokenModel.createToken(request._id, access._id, function (err, token) {
+    if (err) {
+      logErr('Unable to create access token');
+      cb(err, null, null);
+    }
+    else {
+
+      log('Access token created : ' + token.token);
+
+      refreshTokenModel.createToken(request._id, access._id, function (err, refreshToken) {
+        if (err) {
+          logErr('Unable to create refresh token');
+          cb(err, null, null);
+        }
+        else {
+
+          log('Refresh token created : ' + refreshToken.token);
+          access.currentAccessTokenId = token._id;
+          access.currentRefreshTokenId = refreshToken._id;
+          access.save(function (err) {
+            if (err) {
+              logErr('Unable to update access');
+              cb(err, null, null);
+            }
+            else {
+              log('Access updated !');
+              cb(null, token, refreshToken);
+            }
+          });
+        }
+      });
     }
   });
 };

@@ -89,16 +89,14 @@ function authorizationCodeGrantResult(req, res, next) {
 
           if (req.body.allow != undefined) {
 
-            //Generate code
-            log('Generating code ...');
-            authorizationCodeModel.createCodeFromRequest(request, req.authUserId, req.authClient._id, function (err, authorizationCode) {
-              if (err || authorizationCode == undefined) {
-                logErr('Unable to generate code');
+            //Generate access + code
+            log('Creating access');
+            accessModel.createNewAccessCodeGrant(request, req.authClient._id, request.userId, function(err, access, authorizationCode) {
+              if (err) {
+                logErr(err.errors);
                 authorizeErrorHandler.handleAuthorizationError(req, res, 'server_error', next);
               }
               else {
-                //Redirect back to the client application with code
-                log('Code is ' + authorizationCode.code);
                 var redirectQuery = {
                   code: authorizationCode.code
                 };

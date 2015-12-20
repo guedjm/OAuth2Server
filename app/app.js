@@ -22,15 +22,20 @@ app.use(cookieParser());
 
 //Middleware
 var authorizeMiddleware = require('./middleware/authorizeMiddleware');
+var tokenMiddleware = require('./middleware/tokenMiddleware');
 
 //Routes
 var login = require('./route/login');
 var authorize = require('./route/authorize');
+var token = require('./route/token');
 
 app.use('/v1/oauth2/login', login);
 
 app.use('/v1/oauth2/authorize', authorizeMiddleware);
 app.use('/v1/oauth2/authorize', authorize);
+
+app.use('/v1/oauth2/token', tokenMiddleware);
+app.use('/v1/oauth2/token', token);
 
 // 404 error
 app.use(function(req, res, next) {

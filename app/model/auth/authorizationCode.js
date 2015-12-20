@@ -4,10 +4,8 @@ var sha1 = require('sha1');
 
 var authorizationCodeSchemas = new mongoose.Schema({
   requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthorizationRequest'},
-  clientId: {type: mongoose.Schema.Types.ObjectId, ref: 'Client'},
-  userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  accessId: {type: mongoose.Schema.Types.ObjectId, ref: 'Access'},
   code: String,
-  scope: String,
   deliveryDate: Date,
   expirationDate: Date,
   used: Boolean,
@@ -30,6 +28,30 @@ authorizationCodeSchemas.statics.createCodeFromRequest = function (authorization
     used: false,
     useDate: null };
   authorizationCodeModel.create(code, cb);
+};
+
+authorizationCodeSchemas.statics.createCodeFromAccess = function (request, access, cb) {
+  var now = new Date();
+  var expirationDate = new Date();
+  expirationDate.setMinutes(now.getMinutes() + config.auth.accessCodeDuration);
+
+  var code = {
+    requestId: request._id,
+    accessId: access._id,
+    code: sha1(now.toString() + access.clientId + access.userId + access.userId),
+    deliveryDate: now,
+    expirationDate: expirationDate,
+    used: false,
+    useDate: null };
+  authorizationCodeModel.create(code, cb);
+};
+
+authorizationCodeSchemas.statics.getAvailableCodeWithAccess = function (code, cb) {
+  authorizationCodeModel.findOne({code: code, used: false, expirationDate: {$gt: new Date()}})
+    .populate('accessId')
+    .exec(function (err, code) {
+      cb(err, code);
+    });
 };
 
 authorizationCodeSchemas.methods.useCode = function (cb) {

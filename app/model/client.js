@@ -33,6 +33,10 @@ clientSchema.statics.getActivatedClient = function (clientId, func) {
   clientModel.findOne({clientId: clientId, activated: true}, func);
 };
 
+clientSchema.statics.authenticateClient = function (clientId, clientSecret, cb) {
+  clientModel.findOne({clientId: clientId, clientSecret: clientSecret, activated: true}, cb);
+};
+
 var clientModel = mongoose.model('Client', clientSchema);
 
 module.exports = clientModel;

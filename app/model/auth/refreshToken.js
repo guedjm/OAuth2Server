@@ -13,10 +13,11 @@ var refreshTokenSchema = new mongoose.Schema({
   expirationDate: Date
 });
 
-refreshTokenSchema.statics.createNewRefreshToken = function (requestId, accessId, cb) {
+refreshTokenSchema.statics.createToken = function (requestId, accessId, cb) {
   var now = new Date();
   var expirationDate = new Date();
   expirationDate.setMonth(now.getMonth() + 1);
+
   refreshTokenModel.create({
     requestId: requestId,
     accessId: accessId,

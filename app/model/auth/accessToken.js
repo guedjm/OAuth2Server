@@ -5,14 +5,13 @@ var log = require('debug')('app:model:auth:accessToken');
 var accessTokenSchema = new mongoose.Schema({
   requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AccessTokenRequest'},
   accessId: {type: mongoose.Schema.Types.ObjectId, ref: 'Access'},
-  grantType: String,
   token: String,
   usable: Boolean,
   deliveryDate: Date,
   expirationDate: Date
 });
 
-accessTokenSchema.statics.createFromCode = function (requestId, accessId, cb) {
+accessTokenSchema.statics.createToken = function (requestId, accessId, cb) {
   var now = new Date();
   var expirationDate = new Date();
   expirationDate.setDate(now.getDate() + 1);
@@ -20,7 +19,6 @@ accessTokenSchema.statics.createFromCode = function (requestId, accessId, cb) {
   accessTokenModel.create({
     requestId: requestId,
     accessId: accessId,
-    grantType: 'code',
     token : sha1(requestId + now.toString() + requestId),
     usable: true,
     deliveryDate: now,
