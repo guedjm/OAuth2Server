@@ -25,9 +25,12 @@ var authorizeMiddleware = require('./middleware/authorizeMiddleware');
 var tokenMiddleware = require('./middleware/tokenMiddleware');
 
 //Routes
+var ping = require('./route/ping');
 var login = require('./route/login');
 var authorize = require('./route/authorize');
 var token = require('./route/token');
+
+app.use('/ping', ping);
 
 app.use('/v1/oauth2/login', login);
 
