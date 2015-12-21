@@ -12,7 +12,10 @@
     "url": "https://github.com/guedjm/OAuth2Server/issues"
   },
   "homepage": "https://github.com/guedjm/OAuth2Server#readme",
-  "scripts": {},
+  "scripts": {
+    "start": "DEBUG=app:* nodemon ./bin/start.js",
+    "test": "mocha ./test/tests.js"
+  },
   "dependencies": {
     "body-parser": "^1.14.1",
     "cookie-parser": "^1.4.0",
