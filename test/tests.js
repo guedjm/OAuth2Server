@@ -1,10 +1,10 @@
-var request = require('request');
-var expect = require('chai').expect;
+var server;
 
 describe('Auth server', function () {
 
   before(function () {
-    require('../bin/start');
+    server = require('../bin/server');
+    server.start();
   });
 
   require('./basic/basicTests');
