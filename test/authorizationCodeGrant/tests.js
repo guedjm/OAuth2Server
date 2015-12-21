@@ -1,4 +1,5 @@
 
 describe('Authorization Code Grant', function() {
-  require('./basic');
+//  require('./basic');
+  require('./flow');
 });
