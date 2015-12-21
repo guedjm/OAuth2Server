@@ -7,8 +7,8 @@ var logErr = require('debug')('app:core:accessTokenAuthorizationCode:error');
 function accessTokenAuthorizationCode(req, res, next) {
 
   //Check query
-  if (req.body.code == undefined || req.body.redirect_uri == undefined) {
-    accessTokenErrorHandler.accessTokenAuthorizationCode(req, res, 'invalid_request');
+  if (req.body.code == undefined || req.body.redirect_uri == undefined || req.authClient.redirectUris.indexOf(req.body.redirect_uri) == -1) {
+    accessTokenErrorHandler.handleAccessTokenError(req, res, 'invalid_request');
   }
   else {
 

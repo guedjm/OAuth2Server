@@ -7,41 +7,51 @@ function handleTokenRequest(req, res, next) {
 
   log('Receive a token request : ' + req.method + ' ' + req.baseUrl + req.url);
 
-  //Create accessTokenRequest
-  accessTokenRequestModel.createRequest(req.body.grant_type, req.body.code, req.query.username, req.query.password,
-    req.query.scope, req.query.refreshToken, req.body.redirect_uri, req.body.client_id, req.get('Authorization'), req.ip,
-  function (err, accessTokenRequest) {
-    if (err) {
-      logErr('Unable to create request');
-      next();
-    }
+  if (req.method == 'POST') {
 
-    req.authRequest = accessTokenRequest;
-    if (req.get('Authorization') == undefined) {
-      log('No Authorization in header');
-      next();
-    }
+    //Create accessTokenRequest
+    accessTokenRequestModel.createRequest(req.body.grant_type, req.body.code, req.query.username, req.query.password,
+      req.query.scope, req.query.refreshToken, req.body.redirect_uri, req.body.client_id, req.get('Authorization'), req.ip,
+      function (err, accessTokenRequest) {
+        if (err) {
+          logErr('Unable to create request');
+          next();
+        }
 
-    log('Authorization header is ' + req.get('Authorization'));
-    var clientSecret = req.get('Authorization').split(' ');
-    if (clientSecret[0] != 'Basic' || clientSecret.length != 2) {
-      next();
-    }
-    clientSecret = clientSecret[1];
+        req.authRequest = accessTokenRequest;
+        if (req.get('Authorization') == undefined) {
+          log('No Authorization in header');
+          next();
+        }
+        else {
+          log('Authorization header is ' + req.get('Authorization'));
+          var clientSecret = req.get('Authorization').split(' ');
+          if (clientSecret[0] != 'Basic' || clientSecret.length != 2) {
+            next();
+          }
+          else {
 
-    //Get client
-    clientModel.authenticateClient(req.body.client_id, clientSecret, function (err, client) {
-      if (err || client == undefined) {
-        logErr('Unable to find client');
-        next();
-      }
-      else {
-        req.authClient = client;
-        log('Client is ' + client.applicationName);
-        next();
-      }
-    });
-  });
+            clientSecret = clientSecret[1];
+
+            //Get client
+            clientModel.authenticateClient(req.body.client_id, clientSecret, function (err, client) {
+              if (err || client == undefined) {
+                logErr('Unable to find client');
+                next();
+              }
+              else {
+                req.authClient = client;
+                log('Client is ' + client.applicationName);
+                next();
+              }
+            });
+          }
+        }
+      });
+  }
+  else {
+    next();
+  }
 }
 
 module.exports = handleTokenRequest;
