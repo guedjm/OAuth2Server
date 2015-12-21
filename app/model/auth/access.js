@@ -21,7 +21,8 @@ accessSchema.statics.getExistingAccess = function (userId, clientId, scope, cb) 
   accessModel.findOne({
     clientId: clientId,
     userId: userId,
-    scope: scope
+    scope: scope,
+    revoked: false
   }, cb);
 };
 
