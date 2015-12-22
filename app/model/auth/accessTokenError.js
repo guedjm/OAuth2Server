@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var log = require('debug')('app:model:auth:accessTokenError');
 
 var accessTokenErrorSchema = new mongoose.Schema({
-  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'TokenRequest'},
+  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthTokenRequest'},
   error: String
 });
 
@@ -22,6 +22,6 @@ accessTokenErrorSchema.statics.deleteAll = function (cb) {
   });
 };
 
-var accessTokenErrorModel = mongoose.model('AccessTokenError', accessTokenErrorSchema);
+var accessTokenErrorModel = mongoose.model('AuthAccessTokenError', accessTokenErrorSchema);
 
 module.exports = accessTokenErrorModel;

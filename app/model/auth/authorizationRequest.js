@@ -41,6 +41,6 @@ authorizationRequestSchema.statics.deleteAll = function (cb) {
   });
 };
 
-var authorizationRequestModel = mongoose.model('AuthorizationRequest', authorizationRequestSchema);
+var authorizationRequestModel = mongoose.model('AuthAuthorizationRequest', authorizationRequestSchema);
 
 module.exports = authorizationRequestModel;

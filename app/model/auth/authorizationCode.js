@@ -4,8 +4,8 @@ var sha1 = require('sha1');
 var log = require('debug')('app:model:auth:authorizationCode');
 
 var authorizationCodeSchemas = new mongoose.Schema({
-  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthorizationRequest'},
-  accessId: {type: mongoose.Schema.Types.ObjectId, ref: 'Access'},
+  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAuthorizationRequest'},
+  accessId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccess'},
   code: String,
   deliveryDate: Date,
   expirationDate: Date,
@@ -71,6 +71,6 @@ authorizationCodeSchemas.methods.useCode = function (cb) {
 };
 
 
-var authorizationCodeModel = mongoose.model('AuthorizationCode', authorizationCodeSchemas);
+var authorizationCodeModel = mongoose.model('AuthAuthorizationCode', authorizationCodeSchemas);
 
 module.exports = authorizationCodeModel;

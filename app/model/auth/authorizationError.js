@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var log = require('debug')('app:model:auth:authorizationError');
 
 var authorizationErrorSchema = new mongoose.Schema({
-  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthorizationRequest'},
+  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAuthorizationRequest'},
   error: String
 });
 
@@ -28,6 +28,6 @@ authorizationErrorSchema.statics.deleteAll = function (cb) {
   });
 };
 
-var authorizationErrorModel = mongoose.model('AuthorizationError', authorizationErrorSchema);
+var authorizationErrorModel = mongoose.model('AuthAuthorizationError', authorizationErrorSchema);
 
 module.exports = authorizationErrorModel;

@@ -3,8 +3,8 @@ var sha1 = require('sha1');
 var log = require('debug')('app:model:auth:accessToken');
 
 var accessTokenSchema = new mongoose.Schema({
-  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AccessTokenRequest'},
-  accessId: {type: mongoose.Schema.Types.ObjectId, ref: 'Access'},
+  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccessTokenRequest'},
+  accessId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccess'},
   token: String,
   usable: Boolean,
   deliveryDate: Date,
@@ -48,6 +48,6 @@ accessTokenSchema.methods.condemn = function (cb) {
   });
 };
 
-var accessTokenModel = mongoose.model('AccessToken', accessTokenSchema);
+var accessTokenModel = mongoose.model('AuthAccessToken', accessTokenSchema);
 
 module.exports = accessTokenModel;

@@ -111,6 +111,6 @@ accessTokenRequestSchema.statics.deleteAll = function (cb) {
   });
 };
 
-var accessTokenRequestModel = mongoose.model('AccessTokenRequest', accessTokenRequestSchema);
+var accessTokenRequestModel = mongoose.model('AuthAccessTokenRequest', accessTokenRequestSchema);
 
 module.exports = accessTokenRequestModel;

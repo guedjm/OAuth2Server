@@ -10,8 +10,8 @@ var  accessSchema = new mongoose.Schema({
   userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   grantType: String,
   scope: String,
-  currentAccessTokenId: {type: mongoose.Schema.Types.ObjectId, ref: 'AccessToken'},
-  currentRefreshTokenId: {type: mongoose.Schema.Types.ObjectId, ref: 'RefreshToken'},
+  currentAccessTokenId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccessToken'},
+  currentRefreshTokenId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthRefreshToken'},
   deliveryDate: Date,
   revoked: Boolean,
   revokeDate: Date
@@ -322,6 +322,6 @@ accessSchema.methods.generateTokens = function (request, cb) {
   });
 };
 
-var accessModel = mongoose.model('Access', accessSchema);
+var accessModel = mongoose.model('AuthAccess', accessSchema);
 
 module.exports = accessModel;

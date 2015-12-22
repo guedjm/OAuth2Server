@@ -4,8 +4,8 @@ var log = require('debug')('app:model:auth:refreshToken');
 
 
 var refreshTokenSchema = new mongoose.Schema({
-  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AccessTokenRequest'},
-  accessId: {type: mongoose.Schema.Types.ObjectId, ref: 'Access'},
+  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccessTokenRequest'},
+  accessId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccess'},
   token: String,
   used: Boolean,
   usable: Boolean,
@@ -50,6 +50,6 @@ refreshTokenSchema.statics.deleteAll = function (cb) {
   });
 };
 
-var refreshTokenModel = mongoose.model('RefreshToken', refreshTokenSchema);
+var refreshTokenModel = mongoose.model('AuthRefreshToken', refreshTokenSchema);
 
 module.exports = refreshTokenModel;
