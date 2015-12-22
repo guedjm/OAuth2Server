@@ -1,4 +1,3 @@
-var querystring = require('querystring');
 var accessTokenErrorHandler = require('./accessTokenErrorHandler');
 var authorizationCodeModel = require('../model/auth/authorizationCode');
 var log = require('debug')('app:core:accessTokenAuthorizationCode');

@@ -65,6 +65,42 @@ accessSchema.statics.createNewAccessCodeGrant = function (authRequest, clientId,
   });
 };
 
+accessSchema.statics.createNewAccessPasswordGrant = function (authRequest, clientId, userId, scope, cb) {
+
+  var accessObj = {
+    clientId: clientId,
+    userId: userId,
+    scope: scope,
+    grantType: 'password',
+    currentAccessTokenId: null,
+    currentRefreshTokenId: null,
+    deliveryDate: new Date(),
+    revoked: false,
+    revokeDate: null
+  };
+
+  accessModel.create(accessObj, function(err, access) {
+    if (err) {
+      logErr('Unable to create access');
+      cb(err, null, null, null);
+    }
+    else {
+
+      log('Access created for client : ' + clientId + ' user : ' + userId + ' scope : ' + scope);
+
+      access.generateTokens(authRequest, function (err, accessToken, refreshToken) {
+        if (err) {
+          logErr('Token generation failed');
+          cb(err, null, null, null);
+        }
+        else {
+          cb(null, access, accessToken, refreshToken);
+        }
+      });
+    }
+  });
+};
+
 accessSchema.statics.createNewAccessFromCodeGrant = function (requestId, code, cb) {
 
   //Set Code as used

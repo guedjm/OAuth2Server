@@ -10,8 +10,8 @@ function handleTokenRequest(req, res, next) {
   if (req.method == 'POST') {
 
     //Create accessTokenRequest
-    accessTokenRequestModel.createRequest(req.body.grant_type, req.body.code, req.query.username, req.query.password,
-      req.query.scope, req.query.refreshToken, req.body.redirect_uri, req.body.client_id, req.get('Authorization'), req.ip,
+    accessTokenRequestModel.createRequest(req.body.grant_type, req.body.code, req.body.username, req.body.password,
+      req.body.scope, req.body.refreshToken, req.body.redirect_uri, req.body.client_id, req.get('Authorization'), req.ip,
       function (err, accessTokenRequest) {
         if (err) {
           logErr('Unable to create request');
@@ -34,7 +34,7 @@ function handleTokenRequest(req, res, next) {
             clientSecret = clientSecret[1];
 
             //Get client
-            clientModel.authenticateClient(req.body.client_id, clientSecret, function (err, client) {
+            clientModel.authenticateClientBySecret(clientSecret, function (err, client) {
               if (err || client == undefined) {
                 logErr('Unable to find client');
                 next();
