@@ -86,30 +86,6 @@ describe('Token route :  /v1/oauth2/token', function () {
   });
 
 
-  it('Should return a 400 error when posting invalid redirect_uri', function (done) {
-
-    request.post({
-      url: tokenUrl,
-      form: {
-        grant_type: 'authorization_code',
-        code: '0',
-        redirect_uri: config.test.client.client_redirect_uri + 'r',
-        client_id: config.test.client.client_id
-      },
-      headers: {
-        Authorization: 'Basic ' + config.test.client.client_secret
-      }
-    }, function (err, res, body) {
-      expect(res.statusCode).to.equal(400);
-
-      var result = JSON.parse(body);
-      expect(result.error).to.not.be.undefined;
-      expect(result.error).to.equal('invalid_request');
-
-      done();
-    });
-  });
-
   it('Should return a 400 error when posting invalid code', function (done) {
 
     request.post({

@@ -9,4 +9,5 @@ describe('Auth server', function () {
 
   require('./basic/basicTests');
   require('./authorizationCodeGrant/tests');
+  require('./passwordGrant/tests');
 });
