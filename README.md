@@ -1,2 +1,4 @@
 # OAuth2Server
-A node js implementation of the OAuth2 server flow
+
+
+A node.js implementation of an authorization server following the OAuth2 protocol
