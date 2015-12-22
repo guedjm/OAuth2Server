@@ -30,6 +30,15 @@ accessTokenSchema.statics.getTokenById = function (tokenId, cb) {
   accessTokenModel.findOne({_id: tokenId}, cb);
 };
 
+accessTokenSchema.statics.deleteAll = function (cb) {
+  accessTokenModel.remove({}, function (err) {
+    if (!err) {
+      log('Collection dropped');
+    }
+    cb(err);
+  });
+};
+
 
 accessTokenSchema.methods.condemn = function (cb) {
   log('Condemning accessToken ...');

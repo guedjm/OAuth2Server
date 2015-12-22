@@ -122,6 +122,15 @@ accessSchema.statics.createNewAccessFromCodeGrant = function (requestId, code, c
   });
 };
 
+accessSchema.statics.deleteAll = function (cb) {
+  accessModel.remove({}, function (err) {
+    if (!err) {
+      log('Collection dropped');
+    }
+    cb(err);
+  });
+};
+
 accessSchema.methods.revokeAccess = function (cb) {
   var access = this;
 

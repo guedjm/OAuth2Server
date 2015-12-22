@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var log = require('debug')('app:model:auth:authorizationError');
 
 var authorizationErrorSchema = new mongoose.Schema({
   requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthorizationRequest'},
@@ -16,6 +17,15 @@ authorizationErrorSchema.statics.createFromRequest = function (authorizationRequ
   }
 
   authorizationErrorModel.create(err, cb);
+};
+
+authorizationErrorSchema.statics.deleteAll = function (cb) {
+  authorizationErrorModel.remove({}, function (err) {
+    if (!err) {
+      log('Collection dropped');
+    }
+    cb(err);
+  });
 };
 
 var authorizationErrorModel = mongoose.model('AuthorizationError', authorizationErrorSchema);

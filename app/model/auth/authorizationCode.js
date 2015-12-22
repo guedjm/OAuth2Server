@@ -1,6 +1,7 @@
 var config = require('../../../config');
 var mongoose = require('mongoose');
 var sha1 = require('sha1');
+var log = require('debug')('app:model:auth:authorizationCode');
 
 var authorizationCodeSchemas = new mongoose.Schema({
   requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthorizationRequest'},
@@ -52,6 +53,15 @@ authorizationCodeSchemas.statics.getAvailableCodeWithAccess = function (code, cb
     .exec(function (err, code) {
       cb(err, code);
     });
+};
+
+authorizationCodeSchemas.statics.deleteAll = function (cb) {
+  authorizationCodeModel.remove({}, function (err) {
+    if (!err) {
+      log('Collection dropped');
+    }
+    cb(err);
+  });
 };
 
 authorizationCodeSchemas.methods.useCode = function (cb) {

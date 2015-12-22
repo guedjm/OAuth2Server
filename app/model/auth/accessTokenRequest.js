@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var log = require('debug')('app:model:auth:accessTokenRequest');
 
 var accessTokenRequestSchema = new mongoose.Schema({
   grantType: String,
@@ -99,6 +100,15 @@ accessTokenRequestSchema.statics.createRequest = function (grantType, authorizat
     origin: origin,
     date: now
   }, cb);
+};
+
+accessTokenRequestSchema.statics.deleteAll = function (cb) {
+  accessTokenRequestModel.remove({}, function (err) {
+    if (!err) {
+      log('Collection dropped');
+    }
+    cb(err);
+  });
 };
 
 var accessTokenRequestModel = mongoose.model('AccessTokenRequest', accessTokenRequestSchema);

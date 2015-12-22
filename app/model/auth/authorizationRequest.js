@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var log = require('debug')('app:model:auth:authorizationRequest');
 
 var authorizationRequestSchema = new mongoose.Schema({
   responseType: String,
@@ -29,6 +30,15 @@ authorizationRequestSchema.statics.getRequest = function (requestId, cb) {
   authorizationRequestModel.findOne({
     _id: requestId
   }, cb);
+};
+
+authorizationRequestSchema.statics.deleteAll = function (cb) {
+  authorizationRequestModel.remove({}, function (err) {
+    if (!err) {
+      log('Collection dropped');
+    }
+    cb(err);
+  });
 };
 
 var authorizationRequestModel = mongoose.model('AuthorizationRequest', authorizationRequestSchema);

@@ -41,6 +41,15 @@ refreshTokenSchema.methods.condemn = function (cb) {
   });
 };
 
+refreshTokenSchema.statics.deleteAll = function (cb) {
+  refreshTokenModel.remove({}, function (err) {
+    if (!err) {
+      log('Collection dropped');
+    }
+    cb(err);
+  });
+};
+
 var refreshTokenModel = mongoose.model('RefreshToken', refreshTokenSchema);
 
 module.exports = refreshTokenModel;
