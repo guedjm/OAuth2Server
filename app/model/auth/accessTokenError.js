@@ -2,13 +2,13 @@ var mongoose = require('mongoose');
 var log = require('debug')('app:model:auth:accessTokenError');
 
 var accessTokenErrorSchema = new mongoose.Schema({
-  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthTokenRequest'},
+  request: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthTokenRequest'},
   error: String
 });
 
 accessTokenErrorSchema.statics.createError = function (accessTokenRequest, error, cb) {
   accessTokenErrorModel.create({
-    requestId: accessTokenRequest._id,
+    request: accessTokenRequest._id,
     error: error
   }, cb)
 };

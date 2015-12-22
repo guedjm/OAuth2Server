@@ -81,7 +81,7 @@ function authorizationCodeGrantResult(req, res, next) {
           request.clientId != req.authClient.clientId ||
           request.redirectUri != req.query.redirect_uri ||
           request.scope != req.query.scope ||
-          request.userId != req.authUserId) {
+          request.user != req.authUserId) {
 
           authorizeErrorHandler.handleAuthorizationError(req, res, 'invalid_request', next);
         }

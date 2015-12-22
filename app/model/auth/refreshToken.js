@@ -4,8 +4,8 @@ var log = require('debug')('app:model:auth:refreshToken');
 
 
 var refreshTokenSchema = new mongoose.Schema({
-  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccessTokenRequest'},
-  accessId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccess'},
+  request: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccessTokenRequest'},
+  access: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccess'},
   token: String,
   used: Boolean,
   usable: Boolean,
@@ -19,8 +19,8 @@ refreshTokenSchema.statics.createToken = function (requestId, accessId, cb) {
   expirationDate.setMonth(now.getMonth() + 1);
 
   refreshTokenModel.create({
-    requestId: requestId,
-    accessId: accessId,
+    request: requestId,
+    access: accessId,
     token: sha1(accessId + now.toString() + accessId),
     used: false,
     usable: true,

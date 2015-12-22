@@ -24,7 +24,7 @@ function accessTokenAuthorizationCode(req, res, next) {
       }
       else {
 
-        log('Code is attributed to ' + code.accessId.userId);
+        log('Code is attributed to ' + code.access.user);
         code.useCode(function (err) {
           if (err) {
             logErr('Unable to update code');
@@ -35,7 +35,7 @@ function accessTokenAuthorizationCode(req, res, next) {
           }
         });
 
-        code.accessId.generateTokens(req.authRequest, function (err, accessToken, refreshToken) {
+        code.access.generateTokens(req.authRequest, function (err, accessToken, refreshToken) {
           if (err) {
             logErr('Error generating token');
             accessTokenErrorHandler.handleAccessTokenError(req, res, 'server_error');

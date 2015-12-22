@@ -8,7 +8,7 @@ var authorizationRequestSchema = new mongoose.Schema({
   scope: String,
   state: String,
   origin: String,
-  userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   date: Date
 });
 
@@ -20,7 +20,7 @@ authorizationRequestSchema.statics.createAuthorizationRequest = function (respon
     redirectUri: redirectUri,
     scope: scope,
     state: state,
-    userId: userId,
+    user: userId,
     origin: origin,
     date: now
   }, cb);

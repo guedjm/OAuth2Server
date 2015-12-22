@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var log = require('debug')('app:model:auth:authorizationError');
 
 var authorizationErrorSchema = new mongoose.Schema({
-  requestId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAuthorizationRequest'},
+  request: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAuthorizationRequest'},
   error: String
 });
 
@@ -13,7 +13,7 @@ authorizationErrorSchema.statics.createFromRequest = function (authorizationRequ
   };
 
   if (authorizationRequest != undefined) {
-    err.requestId = authorizationRequest._id;
+    err.request = authorizationRequest._id;
   }
 
   authorizationErrorModel.create(err, cb);

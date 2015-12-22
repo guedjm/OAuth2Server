@@ -6,12 +6,12 @@ var refreshTokenModel = require('./refreshToken');
 var authorizationCodeModel = require('./authorizationCode');
 
 var  accessSchema = new mongoose.Schema({
-  clientId: {type: mongoose.Schema.Types.ObjectId, ref: 'Client'},
-  userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  client: {type: mongoose.Schema.Types.ObjectId, ref: 'Client'},
+  user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   grantType: String,
   scope: String,
-  currentAccessTokenId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccessToken'},
-  currentRefreshTokenId: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthRefreshToken'},
+  currentAccessToken: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccessToken'},
+  currentRefreshToken: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthRefreshToken'},
   deliveryDate: Date,
   revoked: Boolean,
   revokeDate: Date
@@ -19,8 +19,8 @@ var  accessSchema = new mongoose.Schema({
 
 accessSchema.statics.getExistingAccess = function (userId, clientId, scope, cb) {
   accessModel.findOne({
-    clientId: clientId,
-    userId: userId,
+    client: clientId,
+    user: userId,
     scope: scope,
     revoked: false
   }, cb);
@@ -29,12 +29,12 @@ accessSchema.statics.getExistingAccess = function (userId, clientId, scope, cb) 
 accessSchema.statics.createNewAccessCodeGrant = function (authRequest, clientId, userId, cb) {
 
    var accessObj = {
-     clientId: clientId,
-     userId: userId,
+     client: clientId,
+     user: userId,
      scope: authRequest.scope,
      grantType: 'code',
-     currentAccessTokenId: null,
-     currentRefreshTokenId: null,
+     currentAccessToken: null,
+     currentRefreshToken: null,
      deliveryDate: new Date(),
      revoked: false,
      revokeDate: null
@@ -68,12 +68,12 @@ accessSchema.statics.createNewAccessCodeGrant = function (authRequest, clientId,
 accessSchema.statics.createNewAccessPasswordGrant = function (authRequest, clientId, userId, scope, cb) {
 
   var accessObj = {
-    clientId: clientId,
-    userId: userId,
+    client: clientId,
+    user: userId,
     scope: scope,
     grantType: 'password',
-    currentAccessTokenId: null,
-    currentRefreshTokenId: null,
+    currentAccessToken: null,
+    currentRefreshToken: null,
     deliveryDate: new Date(),
     revoked: false,
     revokeDate: null
@@ -101,63 +101,6 @@ accessSchema.statics.createNewAccessPasswordGrant = function (authRequest, clien
   });
 };
 
-accessSchema.statics.createNewAccessFromCodeGrant = function (requestId, code, cb) {
-
-  //Set Code as used
-  code.useCode(function (err) {
-    if (err) {
-      return cb(err, null, null, null);
-    }
-
-    console.log("Code used");
-    //Create access
-    accessModel.create({
-      clientId: code.clientId,
-      userId: code.userId,
-      scope: code.scope,
-      currentAccessTokenId: null,
-      currentRefreshTokenId: null,
-      deliveryDate: new Date(),
-      revoked: false
-    }, function (err, access) {
-
-      if (err) {
-        return cb(err, null, null, null);
-      }
-
-      console.log('access created');
-      //Create token
-      accessTokenModel.createFromCode(requestId, access._id, function(err, token) {
-        if (err) {
-          return cb(err, null, null, null);
-        }
-
-        console.log('token created');
-        //Create refresh token
-        refreshTokenModel.createNewRefreshToken(requestId, access._id, function(err, refreshToken) {
-          if (err) {
-            return cb(err, null, null, null);
-          }
-
-          console.log("refresh token crated");
-          //Update access
-          access.currentAccessTokenId = token._id;
-          access.currentRefreshTokenId = refreshToken._id;
-          access.save(function(err) {
-            if (err) {
-              return cb(err, null, null, null);
-            }
-            console.log('access updated');
-
-            //return
-            return cb(null, access, token, refreshToken);
-          });
-        });
-      });
-    });
-  });
-};
-
 accessSchema.statics.deleteAll = function (cb) {
   accessModel.remove({}, function (err) {
     if (!err) {
@@ -170,9 +113,9 @@ accessSchema.statics.deleteAll = function (cb) {
 accessSchema.methods.revokeAccess = function (cb) {
   var access = this;
 
-  if (access.currentAccessTokenId != null) {
+  if (access.currentAccessToken != null) {
     //Condemn access token
-    accessTokenModel.getTokenById(access.currentAccessTokenId, function (err, accessToken) {
+    accessTokenModel.getTokenById(access.currentAccessToken, function (err, accessToken) {
       if (err || accessToken == undefined) {
         logErr('Unable to retrieve accessToken');
         cb(err);
@@ -184,10 +127,10 @@ accessSchema.methods.revokeAccess = function (cb) {
             cb(err);
           }
           else {
-            if (access.currentRefreshTokenId != null) {
+            if (access.currentRefreshToken != null) {
 
               //Condemn refresh token
-              refreshTokenModel.getTokenById(access.currentRefreshTokenId, function (err, refreshToken) {
+              refreshTokenModel.getTokenById(access.currentRefreshToken, function (err, refreshToken) {
                 if (err || accessToken == undefined) {
                   logErr('Unable to retrieve refreshToken');
                   cb(err);
@@ -222,66 +165,6 @@ accessSchema.methods.revokeAccess = function (cb) {
   }
 };
 
-accessSchema.methods.renewTokens = function (requestId, cb) {
-  var access = this;
-  accessTokenModel.findOne({_id: this.currentAccessTokenId}, function (err, oldAccessToken) {
-    if (err || oldAccessToken == undefined) {
-      cb(err, null, null);
-    }
-    else {
-      oldAccessToken.condemn(function (err) {
-        if (err) {
-          cb(err, null, null);
-        }
-        else {
-          console.log('oldToken condemn');
-          accessTokenModel.createFromCode(requestId, oldAccessToken.accessId, function (err, accessToken) {
-            if (err || accessToken == undefined) {
-              cb(err, null, null);
-            }
-            else {
-              console.log('new token created');
-              refreshTokenModel.findOne({_id: access.currentRefreshTokenId}, function (err, oldRefreshToken) {
-                if (err || oldRefreshToken == undefined) {
-                  cb(err, null, null);
-                }
-                else {
-                  oldRefreshToken.condemn(function (err){
-                    if (err) {
-                      cb(err, null, null);
-                      console.log('refreshToken condemn');
-                    }
-                    else {
-                      refreshTokenModel.createNewRefreshToken(requestId, oldRefreshToken.accessId, function (err, refreshToken) {
-                        if (err || refreshToken == undefined) {
-                          cb(err, null, null);
-                        }
-                        else {
-                          console.log('new refreshToken created');
-                          access.currentAccessTokenId = accessToken._id;
-                          access.currentRefreshTokenId = refreshToken._id;
-                          access.save(function (err) {
-                            if (err) {
-                              cb(err, null, null);
-                            }
-                            else {
-                              cb(null, accessToken, refreshToken);
-                            }
-                          });
-                        }
-                      });
-                    }
-                  });
-                }
-              })
-            }
-          });
-        }
-      })
-    }
-  });
-};
-
 accessSchema.methods.generateTokens = function (request, cb) {
 
   var access = this;
@@ -304,8 +187,8 @@ accessSchema.methods.generateTokens = function (request, cb) {
         else {
 
           log('Refresh token created : ' + refreshToken.token);
-          access.currentAccessTokenId = token._id;
-          access.currentRefreshTokenId = refreshToken._id;
+          access.currentAccessToken = token._id;
+          access.currentRefreshToken = refreshToken._id;
           access.save(function (err) {
             if (err) {
               logErr('Unable to update access');
