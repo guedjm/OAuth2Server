@@ -170,7 +170,7 @@ accessSchema.methods.generateTokens = function (request, cb) {
   var access = this;
   log('Generating tokens ...');
 
-  accessTokenModel.createToken(request._id, access._id, function (err, token) {
+  accessTokenModel.createToken(request._id, access._id, access.user, function (err, token) {
     if (err) {
       logErr('Unable to create access token');
       cb(err, null, null);
