@@ -6,13 +6,14 @@ var accessTokenSchema = new mongoose.Schema({
   request: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccessTokenRequest'},
   access: {type: mongoose.Schema.Types.ObjectId, ref: 'AuthAccess'},
   user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  client: {type: mongoose.Schema.Types.ObjectId, ref: 'Client'},
   token: String,
   usable: Boolean,
   deliveryDate: Date,
   expirationDate: Date
 });
 
-accessTokenSchema.statics.createToken = function (requestId, accessId, userId, cb) {
+accessTokenSchema.statics.createToken = function (requestId, accessId, userId, clientId, cb) {
   var now = new Date();
   var expirationDate = new Date();
   expirationDate.setDate(now.getDate() + 1);
@@ -21,6 +22,7 @@ accessTokenSchema.statics.createToken = function (requestId, accessId, userId, c
     request: requestId,
     access: accessId,
     user: userId,
+    client: clientId,
     token : sha1(requestId + now.toString() + requestId),
     usable: true,
     deliveryDate: now,
